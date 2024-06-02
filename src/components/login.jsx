@@ -102,7 +102,7 @@ const Login = ({ isLogin, setIsLogin ,setLoggedIn}) => {
           password:"",
         })
         setLoggedIn(false);
-        navigate('/')
+        navigate("/search")
       })
       .catch((error) => {
         toast.error("Invalid Credentials");

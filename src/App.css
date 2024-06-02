@@ -1,0 +1,17 @@
+/* App.css */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .movie-poster {
+    cursor: pointer;
+    margin: 10px;
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  .movie-poster:hover {
+    transform: scale(1.05);
+  }
+  

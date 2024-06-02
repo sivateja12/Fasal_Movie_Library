@@ -34,9 +34,7 @@ const Header = ({ isLogin, setIsLogin, loggedIn,setLoggedIn }) => {
             <li><a href="#" className="nav-link px-2 text-white">About</a></li>
           </ul>
 
-          <form className="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search">
-            <input type="search" className="form-control form-control-dark text-bg-dark" placeholder="Search..." aria-label="Search" spellCheck="false" data-ms-editor="true" data-last-active-input="" />
-          </form>
+          
 
           <div className="text-end">
             {loggedIn ? (
