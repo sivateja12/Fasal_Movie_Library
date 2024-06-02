@@ -9,17 +9,20 @@ import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   const [isLogin, setIsLogin] = useState(true);
+  const [loggedIn,setLoggedIn]=useState(true);
 
   return (
     <>
       <Router>
         <ToastContainer />
         <div>
-          <Header isLogin={isLogin} setIsLogin={setIsLogin}/>
+          <Header isLogin={isLogin} setIsLogin={setIsLogin} loggedIn={loggedIn} setLoggedIn={setLoggedIn}/>
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Login isLogin={isLogin} setIsLogin={setIsLogin} />} />
-            <Route path="/signup" element={<Login isLogin={isLogin} setIsLogin={setIsLogin} />} />
+            <Route path="/login" element={<Login isLogin={isLogin} setIsLogin={setIsLogin} loggedIn={loggedIn} setLoggedIn={setLoggedIn} />} />
+                <Route path="/signup" element={<Login isLogin={isLogin} setIsLogin={setIsLogin} />} />
+                {/* <Route path="/second" element={<Second />} /> */}
+
           </Routes>
         </div>
       </Router>

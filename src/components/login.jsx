@@ -1,11 +1,11 @@
 import { useState } from "react";
 import styles from "./login.module.css";
-import { loginUser, signUp } from "../services/user-service";
+import { checkEmail, loginUser, signUp } from "../services/user-service";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
-// eslint-disable-next-line react/prop-types
-const Login = ({ isLogin, setIsLogin }) => {
+// eslint-disable-next-line react/prop-types, no-unused-vars
+const Login = ({ isLogin, setIsLogin ,setLoggedIn}) => {
   const navigate = useNavigate();
   const [loginData, setLoginData] = useState({
     email: "",
@@ -54,8 +54,9 @@ const Login = ({ isLogin, setIsLogin }) => {
     } else if (property === "password") {
       setValidation({ ...validation, passwordValid: value.length >= 6 });
     }
+    
     setSignupFormValid(
-      signupData.userName && signupData.email && signupData.password
+      signupData.userName && signupData.email && signupData.password 
     );
   };
 
@@ -73,7 +74,7 @@ const Login = ({ isLogin, setIsLogin }) => {
           setIsLogin(!isLogin);
         })
         .catch((error) => {
-          toast.error("Registration failed. Please try again.");
+          toast.error("Registration failed. Please try again.With Unique Email ID");
         });
     } else {
       toast.error("Please fill all fields in the signup form correctly.");
@@ -100,7 +101,8 @@ const Login = ({ isLogin, setIsLogin }) => {
           email:"",
           password:"",
         })
-        navigate("/"); // or the appropriate route
+        setLoggedIn(false);
+        navigate('/')
       })
       .catch((error) => {
         toast.error("Invalid Credentials");
