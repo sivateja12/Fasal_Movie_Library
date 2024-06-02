@@ -201,7 +201,7 @@ const Login = ({ isLogin, setIsLogin ,setLoggedIn}) => {
                   Password must be at least 6 characters long
                 </span>
               )}
-              <button className={styles.button} disabled={(e)=>handleSubmitSignup(e)}/*disabled={!signupFormValid}*/>
+              <button className={styles.button} onClick={(e)=>handleSubmitSignup(e)}/*disabled={!signupFormValid}*/>
                 Confirm!
               </button>
             </form>

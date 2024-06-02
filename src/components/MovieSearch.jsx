@@ -43,23 +43,21 @@ function MovieSearch() {
   };
 
   return (
-    
     <div className="bg">
-      <h2 style={{textAlign:"center"}}>Movie Search</h2>
+      <h2 style={{ textAlign: "center" }}>Movie Search</h2>
       <center>
-      <form onSubmit={handleSubmit} className="search-form">
-        <input
-          type="text"
-          value={query}
-          onChange={handleInputChange}
-          placeholder="Search for a movie..."
-          className="search-input"
-        />
-        
-        <button type="submit" className="search-button">
-          Search
-        </button>
-      </form>
+        <form onSubmit={handleSubmit} className="search-form">
+          <input
+            type="text"
+            value={query}
+            onChange={handleInputChange}
+            placeholder="Search for a movie..."
+            className="search-input"
+          />
+          <button type="submit" className="search-button">
+            Search
+          </button>
+        </form>
       </center>
       <div className="movie-container">
         {movies.map((movie) => (
@@ -68,7 +66,11 @@ function MovieSearch() {
             className="movie-item"
             onClick={() => handleMovieClick(movie.imdbID)}
           >
-            <img src={movie.Poster} alt={movie.Title} className="movie-poster" />
+            <img
+              src={movie.Poster}
+              alt={movie.Title}
+              className="movie-poster"
+            />
             <p className="movie-title">{movie.Title}</p>
           </div>
         ))}
