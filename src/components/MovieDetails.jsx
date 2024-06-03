@@ -1,9 +1,10 @@
-// MovieDetails.js
-import { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import "./MovieDetails.css";
 import Loader from "./Loader";
 import { PlaylistContext } from "../contexts/PlaylistContext";
+import { privatePlaylistService } from "../services/user-service";
+import { publicPlaylistService } from "../services/user-service";
 
 const MovieDetails = () => {
   const { imdbID } = useParams();
@@ -35,24 +36,48 @@ const MovieDetails = () => {
 
   useEffect(() => {
     const user = localStorage.getItem("user");
-    if (user) {
-      setIsLoggedIn(true);
-    } else {
-      setIsLoggedIn(false);
-    }
+    setIsLoggedIn(user !== null);
   }, []); // No need to re-run this effect when isLoggedIn changes
 
-  const handleAddToPlaylist = (playlistType) => {
+  const handleAddToPlaylist = async (playlistType) => {
     if (playlistType === "private") {
       if (isLoggedIn) {
-        addToPrivatePlaylist(movieDetails);
-        navigate("/private-playlist");
+        try {
+          const response = await privatePlaylistService({
+            imdbID: movieDetails.imdbID,
+            title: movieDetails.Title,
+            year: movieDetails.Year,
+            poster: movieDetails.Poster,
+          });
+          if (response === "Private playlist stored successfully") {
+            navigate("/private-playlist");
+          } else if (response === "Playlist with this IMDb ID already exists") {
+            // Handle if movie already exists in playlist
+          }
+        } catch (error) {
+          console.error("Error adding movie to private playlist:", error);
+          // Handle error adding movie to private playlist
+        }
       } else {
         navigate("/login");
       }
-    } else {
-      addToPublicPlaylist(movieDetails);
-      navigate("/public-playlist");
+    } else if (playlistType === "public") {
+      try {
+        const response = await publicPlaylistService({
+          imdbID: movieDetails.imdbID,
+          title: movieDetails.Title,
+          year: movieDetails.Year,
+          poster: movieDetails.Poster,
+        });
+        if (response === "Public playlist stored successfully") {
+          navigate("/public-playlist");
+        } else if (response === "Playlist with this IMDb ID already exists") {
+          // Handle if movie already exists in playlist
+        }
+      } catch (error) {
+        console.error("Error adding movie to public playlist:", error);
+        // Handle error adding movie to public playlist
+      }
     }
   };
 
@@ -73,10 +98,18 @@ const MovieDetails = () => {
         <p>Released: {movieDetails.Released}</p>
         <p>Genre: {movieDetails.Genre}</p>
         <div>
-          <button type="button" className="btn btn-success" onClick={() => handleAddToPlaylist("private")}>
+          <button
+            type="button"
+            className="btn btn-success"
+            onClick={() => handleAddToPlaylist("private")}
+          >
             Add to Private Playlist
           </button>
-          <button type="button" className="btn btn-warning"  onClick={() => handleAddToPlaylist("public")}>
+          <button
+            type="button"
+            className="btn btn-warning"
+            onClick={() => handleAddToPlaylist("public")}
+          >
             Add to Public Playlist
           </button>
         </div>
