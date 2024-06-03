@@ -39,7 +39,7 @@ function MovieSearch() {
   };
 
   const handleMovieClick = (imdbID) => {
-    navigate(`/movie/${imdbID}`);
+    navigate(`/movie-details/${imdbID}`);
   };
 
   return (

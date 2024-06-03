@@ -4,19 +4,9 @@ import { Link, useNavigate } from 'react-router-dom';
 const Header = ({ isLogin, setIsLogin, loggedIn, setLoggedIn }) => {
   const navigate = useNavigate();
 
-  const handleLoginClick = () => {
-    if (!isLogin) {
-      setIsLogin(true);
-    }
-  };
-
-  const handleSignupClick = () => {
-    if (isLogin) {
-      setIsLogin(false);
-    }
-  };
-
   const handleLogout = () => {
+    // Remove user from local storage
+    localStorage.removeItem('user');
     setIsLogin(true);
     setLoggedIn(false);
     navigate('/login');
@@ -32,8 +22,9 @@ const Header = ({ isLogin, setIsLogin, loggedIn, setLoggedIn }) => {
 
           <ul className="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
             <li><Link to="/search" className="nav-link px-2 text-secondary">Home</Link></li>
-            <li><Link to="/public-playlist" className="nav-link px-2 text-white">Public Playlist</Link></li>
-            <li><Link to="/private-playlist" className="nav-link px-2 text-white">Private Playlist</Link></li>
+            {loggedIn && <li><Link to="/public-playlist" className="nav-link px-2 text-white">Public Playlist</Link></li>}
+            {loggedIn && <li><Link to="/private-playlist" className="nav-link px-2 text-white">Private Playlist</Link></li>}
+            {!loggedIn && <li><Link to="/public-playlist" className="nav-link px-2 text-white">Public Playlist</Link></li>}
           </ul>
 
           <div className="text-end">
@@ -41,8 +32,8 @@ const Header = ({ isLogin, setIsLogin, loggedIn, setLoggedIn }) => {
               <button className="btn btn-outline-light me-2" onClick={handleLogout}>Log out</button>
             ) : (
               <>
-                <Link to="/login" onClick={handleLoginClick} className="btn btn-outline-light me-2">Login</Link>
-                <Link to="/signup" onClick={handleSignupClick} className="btn btn-warning">Sign-up</Link>
+                <Link to="/login" className="btn btn-outline-light me-2">Login</Link>
+                <Link to="/signup" className="btn btn-warning">Sign-up</Link>
               </>
             )}
           </div>

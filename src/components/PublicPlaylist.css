@@ -1,0 +1,35 @@
+/* PublicPlaylist.css */
+
+.public-playlist-container {
+    padding: 20px;
+  }
+  
+  .public-movie-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+  }
+  
+  .public-movie-item {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    overflow: hidden;
+  }
+  
+  .public-movie-item img {
+    width: 100%;
+    height: auto;
+  }
+  
+  .public-movie-details {
+    padding: 10px;
+  }
+  
+  .public-movie-title {
+    font-weight: bold;
+  }
+  
+  .public-movie-year {
+    color: #888;
+  }
+  
