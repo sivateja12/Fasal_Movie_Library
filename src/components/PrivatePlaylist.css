@@ -1,37 +1,32 @@
 .private-playlist-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-  }
-  
-  .private-movie-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    grid-gap: 20px;
-  }
-  
-  .private-movie-item {
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    overflow: hidden;
-  }
-  
-  .private-movie-item img {
-    width: 100%;
-    height: auto;
-    display: block;
-  }
-  
-  .private-movie-details {
-    padding: 10px;
-    background-color: #f9f9f9;
-  }
-  
-  .private-movie-title {
-    font-weight: bold;
-  }
-  
-  .private-movie-year {
-    color: #666;
-  }
-  
+  padding: 20px;
+}
+
+.private-movie-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.private-movie-item {
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.private-movie-item img {
+  width: 100%;
+  height: auto;
+}
+
+.private-movie-details {
+  padding: 10px;
+}
+
+.private-movie-title {
+  font-weight: bold;
+}
+
+.private-movie-year {
+  color: #888;
+}

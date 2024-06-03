@@ -5,9 +5,8 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { PlaylistProvider } from "./contexts/PlaylistContext";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
+ 
     <PlaylistProvider>
       <App />
     </PlaylistProvider>
-  </React.StrictMode>
 );
