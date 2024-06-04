@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { deleteMovieService, publicDisplay } from "../services/user-service";
+import { deleteMovieService } from "../services/user-service";
 import "./PublicPlaylist.css";
 import { PlaylistContext } from "../contexts/PlaylistContext";
 import { toast } from "react-toastify";
@@ -7,16 +7,15 @@ import { toast } from "react-toastify";
 const PublicPlaylist = () => {
   const [movies, setMovies] = useState([]);
   const [error, setError] = useState(null);
-  const { publicPlaylist } = useContext(PlaylistContext);
+  const { publicPlaylist, removeFromPublicPlaylist } = useContext(PlaylistContext);
 
   useEffect(() => {
     const fetchPublicPlaylist = async () => {
       try {
         const moviesData = [];
-        for (const imdbID of publicPlaylist) {
-          const response = await fetch(
-            `https://www.omdbapi.com/?t=${imdbID}&apikey=6f1b1840`
-          );
+        const uniqueMovies = new Set(publicPlaylist); // Ensure no duplicates
+        for (const title of uniqueMovies) {
+          const response = await fetch(`https://www.omdbapi.com/?t=${title}&apikey=6f1b1840`);
           if (!response.ok) {
             throw new Error("Failed to fetch data");
           }
@@ -30,15 +29,14 @@ const PublicPlaylist = () => {
     };
 
     fetchPublicPlaylist();
-  }, [publicPlaylist]); // Fetch data whenever publicPlaylist changes
+  }, [publicPlaylist]);
 
   const deleteMovieFromPlaylist = async (movie) => {
     try {
       const response = await deleteMovieService(movie.imdbID);
       if (response === "Movie deleted successfully") {
         toast.success("Movie deleted from playlist!");
-        // Update movies state to remove the deleted movie
-        setMovies(movies.filter((m) => m.imdbID !== movie.imdbID));
+        removeFromPublicPlaylist(movie.Title);
       } else {
         toast.error("Failed to delete movie from playlist.");
       }
@@ -67,9 +65,7 @@ const PublicPlaylist = () => {
                 <span className="public-movie-year">({movie.Year})</span>
               </div>
               <div className="public-movie-actions">
-                <button onClick={() => deleteMovieFromPlaylist(movie)}>
-                  Delete
-                </button>
+                <button onClick={() => deleteMovieFromPlaylist(movie)}>Delete</button>
               </div>
             </div>
           ))}

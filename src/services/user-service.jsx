@@ -28,10 +28,26 @@ export const privateDisplay = () => {
   return myAxios.get("/private-display").then((res) => res.data);
 };
 
-export const deleteMovieService = async (imdbID) => {
+// export const deleteMovieService = async (imdbID) => {
+//   try {
+//     const response = await myAxios.delete(`/delete-movie/${imdbID}`);
+//     return response.data;
+//   } catch (error) {
+//     throw new Error("Failed to delete movie");
+//   }
+// };
+export const deleteMovieService = async (imdbID, playlistType) => {
   try {
-    const response = await myAxios.delete(`/delete-movie/${imdbID}`);
-    return response.data;
+    // Fetch the current playlist from local storage
+    const playlist = JSON.parse(localStorage.getItem(playlistType)) || [];
+
+    // Filter out the movie to be deleted
+    const updatedPlaylist = playlist.filter(movieTitle => movieTitle !== imdbID);
+
+    // Update the local storage with the new playlist
+    localStorage.setItem(playlistType, JSON.stringify(updatedPlaylist));
+
+    return "Movie deleted successfully";
   } catch (error) {
     throw new Error("Failed to delete movie");
   }

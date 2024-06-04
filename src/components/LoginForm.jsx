@@ -47,7 +47,7 @@ const LoginForm = ({ setLoggedIn }) => {
       localStorage.setItem("user", JSON.stringify(loginData));
       localStorage.setItem("loggedIn", JSON.stringify(true));
 
-      navigate("/search"); // Navigate back to the previous page
+      navigate(-1); // Navigate back to the previous page
     } else {
       toast.error("Invalid Credentials");
     }
