@@ -1,9 +1,7 @@
-// LoginForm.js
-import { useState } from "react";
-import styles from "./login.module.css";
-import { loginUser } from "../services/user-service";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import styles from "./login.module.css";
 
 const LoginForm = ({ setLoggedIn }) => {
   const navigate = useNavigate();
@@ -34,21 +32,25 @@ const LoginForm = ({ setLoggedIn }) => {
       toast.error("Fields must be filled!!!");
       return;
     }
-    loginUser(loginData)
-      .then((res) => {
-        toast.success("Login Success!!!");
-        setLoginData({
-          email: "",
-          password: "",
-        });
-        setLoggedIn(true);
-        // Save login data to local storage
-        localStorage.setItem("user", JSON.stringify(loginData));
-        navigate(-1); // Navigate back to the previous page
-      })
-      .catch((error) => {
-        toast.error("Invalid Credentials");
-      });
+
+    // Retrieve signup data from local storage
+    const storedSignupData = JSON.parse(localStorage.getItem("signupData"));
+
+    if (
+      storedSignupData &&
+      storedSignupData.email === loginData.email &&
+      storedSignupData.password === loginData.password
+    ) {
+      toast.success("Login Success!!!");
+      setLoggedIn(true);
+      // Save login data to local storage
+      localStorage.setItem("user", JSON.stringify(loginData));
+      localStorage.setItem("loggedIn", JSON.stringify(true));
+
+      navigate("/search"); // Navigate back to the previous page
+    } else {
+      toast.error("Invalid Credentials");
+    }
   };
 
   return (

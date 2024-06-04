@@ -1,4 +1,3 @@
-// PrivatePlaylist.js
 import React, { useContext, useEffect, useState } from "react";
 import { deleteMovieService, privateDisplay } from "../services/user-service";
 import "./PrivatePlaylist.css";
@@ -13,11 +12,18 @@ const PrivatePlaylist = () => {
   useEffect(() => {
     const fetchPrivatePlaylist = async () => {
       try {
-        const data = await privateDisplay();
-        if (!data || !Array.isArray(data)) {
-          throw new Error("Invalid data format received");
+        const moviesData = [];
+        for (const imdbID of privatePlaylist) {
+          const response = await fetch(
+            `https://www.omdbapi.com/?t=${imdbID}&apikey=6f1b1840`
+          );
+          if (!response.ok) {
+            throw new Error("Failed to fetch data");
+          }
+          const movie = await response.json();
+          moviesData.push(movie);
         }
-        setMovies(data); // Set the fetched movies to state
+        setMovies(moviesData);
       } catch (error) {
         setError(error.message);
       }
@@ -52,15 +58,10 @@ const PrivatePlaylist = () => {
       <div className="private-movie-grid">
         {movies.map((movie) => (
           <div key={movie.imdbID} className="private-movie-item">
-            <img src={movie.poster} alt={movie.title} />
+            <img src={movie.Poster} alt={movie.Title} />
             <div className="private-movie-details">
-              <span className="private-movie-title">{movie.title}</span>
-              <span
-                className="
-private-movie-year"
-              >
-                ({movie.year})
-              </span>
+              <span className="private-movie-title">{movie.Title}</span>
+              <span className="private-movie-year">({movie.Year})</span>
             </div>
             <div className="private-movie-actions">
               <button onClick={() => deleteMovieFromPlaylist(movie)}>

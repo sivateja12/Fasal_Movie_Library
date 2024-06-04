@@ -3,8 +3,7 @@ import { Link, useParams, useNavigate } from "react-router-dom";
 import "./MovieDetails.css";
 import Loader from "./Loader";
 import { PlaylistContext } from "../contexts/PlaylistContext";
-import { privatePlaylistService } from "../services/user-service";
-import { publicPlaylistService } from "../services/user-service";
+import { ToastContainer, toast } from "react-toastify";
 
 const MovieDetails = () => {
   const { imdbID } = useParams();
@@ -39,45 +38,21 @@ const MovieDetails = () => {
     setIsLoggedIn(user !== null);
   }, []); // No need to re-run this effect when isLoggedIn changes
 
-  const handleAddToPlaylist = async (playlistType) => {
+  const handleAddToPlaylist = (playlistType) => {
     if (playlistType === "private") {
-      if (isLoggedIn) {
-        try {
-          const response = await privatePlaylistService({
-            imdbID: movieDetails.imdbID,
-            title: movieDetails.Title,
-            year: movieDetails.Year,
-            poster: movieDetails.Poster,
-          });
-          if (response === "Private playlist stored successfully") {
-            navigate("/private-playlist");
-          } else if (response === "Playlist with this IMDb ID already exists") {
-            // Handle if movie already exists in playlist
-          }
-        } catch (error) {
-          console.error("Error adding movie to private playlist:", error);
-          // Handle error adding movie to private playlist
-        }
-      } else {
+      if (!isLoggedIn) {
         navigate("/login");
+        return;
       }
+      addToPrivatePlaylist(movieDetails);
+      navigate("/private-playlist");
     } else if (playlistType === "public") {
-      try {
-        const response = await publicPlaylistService({
-          imdbID: movieDetails.imdbID,
-          title: movieDetails.Title,
-          year: movieDetails.Year,
-          poster: movieDetails.Poster,
-        });
-        if (response === "Public playlist stored successfully") {
-          navigate("/public-playlist");
-        } else if (response === "Playlist with this IMDb ID already exists") {
-          // Handle if movie already exists in playlist
-        }
-      } catch (error) {
-        console.error("Error adding movie to public playlist:", error);
-        // Handle error adding movie to public playlist
-      }
+      addToPublicPlaylist(movieDetails);
+      const publicPlaylist = JSON.parse(localStorage.getItem("publicPlaylist")) || [];
+      publicPlaylist.push(movieDetails.Title);
+      localStorage.setItem("publicPlaylist", JSON.stringify(publicPlaylist));
+      // navigate("/public-playlist");
+      toast.success("Movie added successfully")
     }
   };
 
@@ -117,6 +92,7 @@ const MovieDetails = () => {
           Back
         </Link>
       </div>
+      {/* <ToastContainer/> */}
     </div>
   );
 };

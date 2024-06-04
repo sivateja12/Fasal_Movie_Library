@@ -1,11 +1,8 @@
-// src/components/SignupForm.js
-import { useState } from "react";
-import styles from "./login.module.css";
-import { signUp } from "../services/user-service";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import styles from "./login.module.css";
 
-// eslint-disable-next-line react/prop-types
 const SignupForm = ({ setIsLogin }) => {
   const navigate = useNavigate();
   const [signupData, setSignupData] = useState({
@@ -45,20 +42,12 @@ const SignupForm = ({ setIsLogin }) => {
       return;
     }
 
-    signUp(signupData)
-      .then((res) => {
-        toast.success("User Registered Successfully!!!", { autoClose: 3000 });
-        setSignupData({
-          userName: "",
-          email: "",
-          password: "",
-        });
-        setIsLogin(true);
-        navigate("/login");
-      })
-      .catch((error) => {
-        toast.error("Registration failed. Please try again. With Unique Email ID");
-      });
+    // Store signup data in local storage
+    localStorage.setItem("signupData", JSON.stringify(signupData));
+
+    toast.success("User Registered Successfully!!!", { autoClose: 3000 });
+    setIsLogin(true);
+    navigate("/login");
   };
 
   return (
@@ -68,27 +57,25 @@ const SignupForm = ({ setIsLogin }) => {
         <form className={styles.form} onSubmit={handleSignupSubmit}>
           <input
             className={styles.input}
-            onChange={(e) => handleSignupChange(e, "userName")}
             placeholder="Name"
             type="text"
-            value={signupData.userName}
             name="userName"
+            value={signupData.userName}
+            onChange={(e) => handleSignupChange(e, "userName")}
             style={{
               borderColor: validation.userNameValid ? "initial" : "red",
             }}
           />
           {!validation.userNameValid && (
-            <span className={styles.error}>
-              Username must be 3-50 characters long
-            </span>
+            <span className={styles.error}>Username must be 3-50 characters long</span>
           )}
           <input
             className={styles.input}
-            onChange={(e) => handleSignupChange(e, "email")}
-            name="email"
             placeholder="Email"
             type="email"
+            name="email"
             value={signupData.email}
+            onChange={(e) => handleSignupChange(e, "email")}
             style={{
               borderColor: validation.emailValid ? "initial" : "red",
             }}
@@ -98,19 +85,17 @@ const SignupForm = ({ setIsLogin }) => {
           )}
           <input
             className={styles.input}
-            onChange={(e) => handleSignupChange(e, "password")}
-            name="password"
             placeholder="Password"
             type="password"
+            name="password"
             value={signupData.password}
+            onChange={(e) => handleSignupChange(e, "password")}
             style={{
               borderColor: validation.passwordValid ? "initial" : "red",
             }}
           />
           {!validation.passwordValid && (
-            <span className={styles.error}>
-              Password must be at least 6 characters long
-            </span>
+            <span className={styles.error}>Password must be at least 6 characters long</span>
           )}
           <button className={styles.button}>Confirm!</button>
         </form>

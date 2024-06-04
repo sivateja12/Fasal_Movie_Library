@@ -1,4 +1,3 @@
-// PublicPlaylist.js
 import React, { useContext, useEffect, useState } from "react";
 import { deleteMovieService, publicDisplay } from "../services/user-service";
 import "./PublicPlaylist.css";
@@ -13,18 +12,25 @@ const PublicPlaylist = () => {
   useEffect(() => {
     const fetchPublicPlaylist = async () => {
       try {
-        const data = await publicDisplay();
-        if (!data || !Array.isArray(data)) {
-          throw new Error("Invalid data format received");
+        const moviesData = [];
+        for (const imdbID of publicPlaylist) {
+          const response = await fetch(
+            `https://www.omdbapi.com/?t=${imdbID}&apikey=6f1b1840`
+          );
+          if (!response.ok) {
+            throw new Error("Failed to fetch data");
+          }
+          const movie = await response.json();
+          moviesData.push(movie);
         }
-        setMovies(data); // Set the fetched movies to state
+        setMovies(moviesData);
       } catch (error) {
         setError(error.message);
       }
     };
 
     fetchPublicPlaylist();
-  }, [publicPlaylist]);
+  }, [publicPlaylist]); // Fetch data whenever publicPlaylist changes
 
   const deleteMovieFromPlaylist = async (movie) => {
     try {
@@ -49,22 +55,26 @@ const PublicPlaylist = () => {
   return (
     <div className="public-playlist-container">
       <h1>Public Playlist</h1>
-      <div className="public-movie-grid">
-        {movies.map((movie) => (
-          <div key={movie.imdbID} className="public-movie-item">
-            <img src={movie.poster} alt={movie.Title} />
-            <div className="public-movie-details">
-              <span className="public-movie-title">{movie.Title}</span>
-              <span className="public-movie-year">({movie.Year})</span>
+      {movies.length === 0 ? (
+        <p>Please add movies to the playlist</p>
+      ) : (
+        <div className="public-movie-grid">
+          {movies.map((movie) => (
+            <div key={movie.imdbID} className="public-movie-item">
+              <img src={movie.Poster} alt={movie.Title} />
+              <div className="public-movie-details">
+                <span className="public-movie-title">{movie.Title}</span>
+                <span className="public-movie-year">({movie.Year})</span>
+              </div>
+              <div className="public-movie-actions">
+                <button onClick={() => deleteMovieFromPlaylist(movie)}>
+                  Delete
+                </button>
+              </div>
             </div>
-            <div className="public-movie-actions">
-              <button onClick={() => deleteMovieFromPlaylist(movie)}>
-                Delete
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
