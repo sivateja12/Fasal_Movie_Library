@@ -1,9 +1,10 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import "./MovieDetails.css";
 import Loader from "./Loader";
 import { PlaylistContext } from "../contexts/PlaylistContext";
 import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const MovieDetails = () => {
   const { imdbID } = useParams();
@@ -12,6 +13,7 @@ const MovieDetails = () => {
   const { addToPrivatePlaylist, addToPublicPlaylist } = useContext(PlaylistContext);
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const userId= localStorage.getItem('userId')
 
   useEffect(() => {
     const fetchMovieDetails = async () => {
@@ -36,32 +38,38 @@ const MovieDetails = () => {
   useEffect(() => {
     const user = localStorage.getItem("user");
     setIsLoggedIn(user !== null);
-  }, []); // No need to re-run this effect when isLoggedIn changes
+  }, []);
 
-  const handleAddToPlaylist = (playlistType) => {
-    if (playlistType === "private") {
-      if (!isLoggedIn) {
+  const handleAddToPlaylist = async (playlistType) => {
+    try {
+      if (playlistType === "private" || userId===null) {
+        localStorage.setItem("redirectAfterLogin", `/movie/${imdbID}`);
         navigate("/login");
         return;
       }
-      addToPrivatePlaylist(movieDetails);
-      navigate("/private-playlist");
-    } else if (playlistType === "public") {
-      addToPublicPlaylist(movieDetails);
-      const publicPlaylist = JSON.parse(localStorage.getItem("publicPlaylist")) || [];
-      publicPlaylist.push(movieDetails.Title);
-      localStorage.setItem("publicPlaylist", JSON.stringify(publicPlaylist));
-      // navigate("/public-playlist");
-      toast.success("Movie added successfully")
+
+      const movie = {
+        Title: movieDetails.Title,
+        Year: movieDetails.Year,
+        Poster: movieDetails.Poster,
+        imdbID: imdbID,
+      };
+
+      if (playlistType === "private") {
+        await addToPrivatePlaylist(movie);
+        toast.success("Movie added to private playlist!");
+      } else if (playlistType === "public") {
+        await addToPublicPlaylist(movie);
+        toast.success("Movie added to public playlist!");
+      }
+    } catch (error) {
+      console.error("Error adding movie to playlist:", error);
+      toast.error(`Failed to add movie to playlist: ${error.message}`);
     }
   };
 
   if (loading) {
     return <Loader />;
-  }
-
-  if (!movieDetails) {
-    return <div>Loading...</div>;
   }
 
   return (
@@ -92,7 +100,7 @@ const MovieDetails = () => {
           Back
         </Link>
       </div>
-      {/* <ToastContainer/> */}
+      <ToastContainer />
     </div>
   );
 };

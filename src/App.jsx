@@ -38,6 +38,7 @@ function App() {
             path="/signup"
             element={<SignupForm setIsLogin={setIsLogin} />}
           />
+          <Route path="*" element={<MovieSearch/>}/>
         </Routes>
         <ToastContainer />
       </div>

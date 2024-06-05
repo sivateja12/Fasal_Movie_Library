@@ -1,45 +1,38 @@
 import React, { useContext, useEffect, useState } from "react";
-import { deleteMovieService } from "../services/user-service";
-import "./PublicPlaylist.css";
 import { PlaylistContext } from "../contexts/PlaylistContext";
+import { fetchALLPlaylist, fetchPlaylist } from "../services/user-service";
 import { toast } from "react-toastify";
+import "./PublicPlaylist.css";
 
 const PublicPlaylist = () => {
   const [movies, setMovies] = useState([]);
   const [error, setError] = useState(null);
   const { publicPlaylist, removeFromPublicPlaylist } = useContext(PlaylistContext);
+  const userId = localStorage.getItem("userId");
 
   useEffect(() => {
     const fetchPublicPlaylist = async () => {
       try {
-        const moviesData = [];
-        const uniqueMovies = new Set(publicPlaylist); // Ensure no duplicates
-        for (const title of uniqueMovies) {
-          const response = await fetch(`https://www.omdbapi.com/?t=${title}&apikey=6f1b1840`);
-          if (!response.ok) {
-            throw new Error("Failed to fetch data");
-          }
-          const movie = await response.json();
-          moviesData.push(movie);
+        let moviesData;
+        if(userId){
+          moviesData=await fetchPlaylist(userId, "public");
+        }else{
+          moviesData=await fetchALLPlaylist("public");
         }
+        console.log("Movies data:", moviesData);
         setMovies(moviesData);
       } catch (error) {
         setError(error.message);
       }
     };
-
+      
     fetchPublicPlaylist();
-  }, [publicPlaylist]);
+  }, [publicPlaylist, userId]);
 
   const deleteMovieFromPlaylist = async (movie) => {
     try {
-      const response = await deleteMovieService(movie.imdbID);
-      if (response === "Movie deleted successfully") {
-        toast.success("Movie deleted from playlist!");
-        removeFromPublicPlaylist(movie.Title);
-      } else {
-        toast.error("Failed to delete movie from playlist.");
-      }
+      await removeFromPublicPlaylist(movie.imdbID);
+      toast.success("Movie deleted from playlist!");
     } catch (error) {
       console.error("Error deleting movie from playlist:", error);
       toast.error("Failed to delete movie from playlist.");
@@ -64,9 +57,9 @@ const PublicPlaylist = () => {
                 <span className="public-movie-title">{movie.Title}</span>
                 <span className="public-movie-year">({movie.Year})</span>
               </div>
-              <div className="public-movie-actions">
+             {userId ? <div className="public-movie-actions">
                 <button onClick={() => deleteMovieFromPlaylist(movie)}>Delete</button>
-              </div>
+              </div> :''}
             </div>
           ))}
         </div>

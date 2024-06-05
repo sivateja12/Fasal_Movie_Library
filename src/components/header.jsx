@@ -1,13 +1,22 @@
+import React, { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
-// eslint-disable-next-line react/prop-types
-const Header = ({ isLogin, setIsLogin, loggedIn, setLoggedIn }) => {
+const Header = ({ loggedIn, setLoggedIn }) => {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const storedLoggedIn = JSON.parse(localStorage.getItem('loggedIn'));
+    if (storedLoggedIn) {
+      setLoggedIn(true);
+    }
+  }, [setLoggedIn]);
 
   const handleLogout = () => {
     // Remove user from local storage
     localStorage.removeItem('user');
-    setIsLogin(true);
+    localStorage.removeItem('loggedIn');
+    localStorage.removeItem('userId');
+
     setLoggedIn(false);
     navigate('/login');
   };
@@ -21,7 +30,7 @@ const Header = ({ isLogin, setIsLogin, loggedIn, setLoggedIn }) => {
           </Link>
 
           <ul className="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-            <li><Link to="/search" className="nav-link px-2 text-secondary">Home</Link></li>
+            <li><Link to="/" className="nav-link px-2 text-secondary">Home</Link></li>
             {loggedIn && <li><Link to="/public-playlist" className="nav-link px-2 text-white">Public Playlist</Link></li>}
             {loggedIn && <li><Link to="/private-playlist" className="nav-link px-2 text-white">Private Playlist</Link></li>}
             {!loggedIn && <li><Link to="/public-playlist" className="nav-link px-2 text-white">Public Playlist</Link></li>}

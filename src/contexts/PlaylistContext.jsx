@@ -1,83 +1,153 @@
-import React, { createContext, useEffect, useState } from 'react';
+import React, { createContext, useState } from "react";
+import axios from "axios";
 
 export const PlaylistContext = createContext();
 
 export const PlaylistProvider = ({ children }) => {
   const [privatePlaylist, setPrivatePlaylist] = useState([]);
   const [publicPlaylist, setPublicPlaylist] = useState([]);
+  const userId=localStorage.getItem("userId")
 
-  useEffect(() => {
-    const storedPrivatePlaylist = JSON.parse(localStorage.getItem('privatePlaylist')) || [];
-    setPrivatePlaylist(storedPrivatePlaylist);
-    
-    const storedPublicPlaylist = JSON.parse(localStorage.getItem('publicPlaylist')) || [];
-    setPublicPlaylist(storedPublicPlaylist);
-  }, []);
 
-  const addToPrivatePlaylist = (movie) => {
-    const isLoggedIn = JSON.parse(localStorage.getItem('loggedIn'));
-    if (!isLoggedIn) {
-      // If not logged in, redirect to login page
-      window.location.href = '/login';
-      return;
+  const addToPrivatePlaylist = async (movie) => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (!user || !userId) {
+      throw new Error("User ID is missing or invalid. Please log in again.");
     }
 
-    // Check if the movie title is already in the playlist
-    if (privatePlaylist.some(item => item === movie.Title)) {
-      // If movie already in playlist, don't add again
-      return;
+    try {
+      const payload = {
+        userId: userId,
+        type: "private",
+        movie: {
+          imdbID: movie.imdbID,
+        },
+      };
+
+      const response = await axios.post(
+        "http://localhost:5000/playlists/add",
+        payload
+      );
+      if (response.status === 200) {
+        setPrivatePlaylist([...privatePlaylist, movie.imdbID]);
+      } else {
+        throw new Error("Failed to add movie to private playlist");
+      }
+    } catch (error) {
+      console.error(
+        "Error adding movie to private playlist:",
+        error.response ? error.response.data : error.message
+      );
+      throw error;
+    }
+  };
+
+  const addToPublicPlaylist = async (movie) => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (!user || !userId) {
+      throw new Error("User ID is missing or invalid. Please log in again.");
     }
 
-    // Update the state using the callback form of setState
-    setPrivatePlaylist((prevPlaylist) => {
-      const updatedPlaylist = [...prevPlaylist, movie.Title];
-      // Update local storage using the updated state
-      localStorage.setItem('privatePlaylist', JSON.stringify(updatedPlaylist));
-      return updatedPlaylist;
-    });
+    try {
+      const payload = {
+        userId: userId,
+        type: "public",
+        movie: {
+          imdbID: movie.imdbID,
+        },
+      };
+
+      const response = await axios.post(
+        "http://localhost:5000/playlists/add",
+        payload
+      );
+      if (response.status === 200) {
+        setPublicPlaylist([...publicPlaylist, movie.imdbID]);
+      } else {
+        throw new Error("Failed to add movie to public playlist");
+      }
+    } catch (error) {
+      console.error(
+        "Error adding movie to public playlist:",
+        error.response ? error.response.data : error.message
+      );
+      throw error;
+    }
   };
 
-  const addToPublicPlaylist = (movie) => {
-    // Check if the movie title is already in the playlist
-    if (publicPlaylist.some(item => item === movie.Title)) {
-      // If movie already in playlist, don't add again
-      return;
+  const removeFromPrivatePlaylist = async (imdbID) => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (!user || !userId) {
+      throw new Error("User ID is missing or invalid. Please log in again.");
     }
 
-    // Update the state using the callback form of setState
-    setPublicPlaylist((prevPlaylist) => {
-      const updatedPlaylist = [...prevPlaylist, movie.Title];
-      // Update local storage using the updated state
-      localStorage.setItem('publicPlaylist', JSON.stringify(updatedPlaylist));
-      return updatedPlaylist;
-    });
+    try {
+      const payload = {
+        userId: userId,
+        type: "private",
+        movie: {
+          imdbID,
+        },
+      };
+
+      const response = await axios.post(
+        "http://localhost:5000/playlists/delete",
+        payload
+      );
+      if (response.status === 200) {
+        setPrivatePlaylist(privatePlaylist.filter((id) => id !== imdbID));
+      } else {
+        throw new Error("Failed to remove movie from private playlist");
+      }
+    } catch (error) {
+      console.error(
+        "Error removing movie from private playlist:",
+        error.response ? error.response.data : error.message
+      );
+      throw error;
+    }
   };
 
-  const removeFromPrivatePlaylist = (movieTitle) => {
-    setPrivatePlaylist((prevPlaylist) => {
-      const updatedPlaylist = prevPlaylist.filter((title) => title !== movieTitle);
-      localStorage.setItem('privatePlaylist', JSON.stringify(updatedPlaylist));
-      return updatedPlaylist;
-    });
-  };
+  const removeFromPublicPlaylist = async (imdbID) => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (!user || !userId) {
+      throw new Error("User ID is missing or invalid. Please log in again.");
+    }
 
-  const removeFromPublicPlaylist = (movieTitle) => {
-    setPublicPlaylist((prevPlaylist) => {
-      const updatedPlaylist = prevPlaylist.filter((title) => title !== movieTitle);
-      localStorage.setItem('publicPlaylist', JSON.stringify(updatedPlaylist));
-      return updatedPlaylist;
-    });
+    try {
+      const payload = {
+        userId: userId,
+        type: "public",
+        movie: {
+          imdbID,
+        },
+      };
+
+      const response = await axios.post(
+        "http://localhost:5000/playlists/delete",
+        payload
+      );
+      if (response.status === 200) {
+        setPublicPlaylist(publicPlaylist.filter((id) => id !== imdbID));
+      } else {
+        throw new Error("Failed to remove movie from public playlist");
+      }
+    } catch (error) {
+      console.error(
+        "Error removing movie from public playlist:",
+        error.response ? error.response.data : error.message
+      );
+      throw error;
+    }
   };
 
   return (
     <PlaylistContext.Provider
       value={{
-        privatePlaylist,
-        publicPlaylist,
         addToPrivatePlaylist,
         addToPublicPlaylist,
         removeFromPrivatePlaylist,
-        removeFromPublicPlaylist
+        removeFromPublicPlaylist,
       }}
     >
       {children}

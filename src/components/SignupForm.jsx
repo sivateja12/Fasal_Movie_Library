@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import styles from "./login.module.css";
+import { signUp } from "../services/user-service";
 
 const SignupForm = ({ setIsLogin }) => {
   const navigate = useNavigate();
@@ -43,7 +44,17 @@ const SignupForm = ({ setIsLogin }) => {
     }
 
     // Store signup data in local storage
-    localStorage.setItem("signupData", JSON.stringify(signupData));
+    // localStorage.setItem("signupData", JSON.stringify(signupData));
+    
+       signUp(signupData).then((res)=>{
+        toast.success("success");
+        console.log(res);
+       }).catch((e)=>{
+      console.log(e);
+       }
+      );
+
+    
 
     toast.success("User Registered Successfully!!!", { autoClose: 3000 });
     setIsLogin(true);
