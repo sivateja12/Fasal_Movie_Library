@@ -56,7 +56,7 @@
 //---------------------------------
 import axios from "axios";
 
-const API_BASE_URL = "http://localhost:5000";
+const API_BASE_URL = "https://movie-library-backend-bnl2.onrender.com";
 // const userId = localStorage.getItem('userId')
 
 export const signUp = (user) => {
