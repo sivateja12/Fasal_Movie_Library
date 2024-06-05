@@ -25,7 +25,7 @@ export const PlaylistProvider = ({ children }) => {
       };
 
       const response = await axios.post(
-        "http://localhost:5000/playlists/add",
+        "https://movie-library-backend-bnl2.onrender.com/playlists/add",
         payload
       );
       if (response.status === 200) {
@@ -58,7 +58,7 @@ export const PlaylistProvider = ({ children }) => {
       };
 
       const response = await axios.post(
-        "http://localhost:5000/playlists/add",
+        "https://movie-library-backend-bnl2.onrender.com/playlists/add",
         payload
       );
       if (response.status === 200) {
@@ -91,7 +91,7 @@ export const PlaylistProvider = ({ children }) => {
       };
 
       const response = await axios.post(
-        "http://localhost:5000/playlists/delete",
+        "https://movie-library-backend-bnl2.onrender.com/playlists/delete",
         payload
       );
       if (response.status === 200) {
@@ -124,7 +124,7 @@ export const PlaylistProvider = ({ children }) => {
       };
 
       const response = await axios.post(
-        "http://localhost:5000/playlists/delete",
+        "https://movie-library-backend-bnl2.onrender.com/playlists/delete",
         payload
       );
       if (response.status === 200) {
