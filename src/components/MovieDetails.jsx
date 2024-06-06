@@ -42,7 +42,7 @@ const MovieDetails = () => {
 
   const handleAddToPlaylist = async (playlistType) => {
     try {
-      if (playlistType === "private" || userId===null) {
+      if (playlistType === "private" && userId===null) {
         localStorage.setItem("redirectAfterLogin", `/movie/${imdbID}`);
         navigate("/login");
         return;
